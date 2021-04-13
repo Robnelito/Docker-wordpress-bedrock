@@ -1,0 +1,32 @@
+version: '3.3'
+
+services:
+  db:
+    image: mariadb:latest
+    container_name: mariadb
+    volumes: 
+      - ./mysqldata:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wordpress
+
+  apache1:
+    depends_on:
+      - db
+    image: robnelito/apache-php
+    container_name: web
+    ports:
+      - "80:80"
+    restart: always
+    environment:
+      APACHE_DOCUMENT_ROOT: /var/www/web
+      WORDPRESS_DB_PREFIX: bdr
+      WORDPRESS_DATABASE: wordpress
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: root
+    volumes:
+      - type: bind
+        source: ./bedrock
+        target: /var/www
